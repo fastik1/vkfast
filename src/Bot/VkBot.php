@@ -2,8 +2,10 @@
 
 namespace Fastik1\Vkfast\Bot;
 
+use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Commands\Command;
 use Fastik1\Vkfast\Bot\Events\GroupEvent;
+use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Interfaces\CommandInterface;
 use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
@@ -13,9 +15,15 @@ use stdClass;
 
 class VkBot
 {
+    public VkApi $api;
     private array $handlers = [];
     private string $secret = '';
     private string $prefix = '!';
+
+    public function __construct(VkApi $api)
+    {
+        $this->api = $api;
+    }
 
     public function on(string $event, $callback_function): self
     {
@@ -71,25 +79,31 @@ class VkBot
         return $this;
     }
 
-    public function start(): void
+    public function run(): void
     {
-        $event = $this->getEvent();
+        $rawEvent = $this->getEvent();
 
-        if (!$event) {
+        if (!$rawEvent) {
             return;
         }
 
+        $event = new Event($this->api);
+
+        foreach ($rawEvent->object ?? $rawEvent as $key => $value) {
+            $event->{$key} = $value;
+        }
+
         foreach ($this->handlers as $data) {
-            if ($data['event'] !== $event->type) {
+            if ($data['event'] !== $rawEvent->type) {
                 continue;
             }
 
-            if (!Rule::validateRules($data['rules'] ?? [], $event)) {
+            if (!Rule::validateRules($data['rules'] ?? [], $rawEvent)) {
                 continue;
             }
 
             if (!empty($data['command'])) {
-                $commandText = Utils::getArrayElementByString($event, $data['command']['path']);
+                $commandText = Utils::getArrayElementByString($rawEvent, $data['command']['path']);
                 $commandData = Command::validate($data['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
@@ -97,7 +111,7 @@ class VkBot
                 }
 
                 if ($data['command']['class']) {
-                    $commandData = $data['command']['class']->validate($event, $commandData['command'], $commandData['arguments']);
+                    $commandData = $data['command']['class']->validate($rawEvent, $commandData['command'], $commandData['arguments']);
                     if (!$commandData) {
                         continue;
                     }
