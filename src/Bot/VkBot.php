@@ -122,9 +122,14 @@ class VkBot
                     }
                 }
 
-                $data['callback_function']($event, $commandData['command'], ...$commandData['arguments']);
+                $callback = $data['callback_function']($event, $commandData['command'], ...$commandData['arguments']);
             } else {
-                $data['callback_function']($event);
+                $callback = $data['callback_function']($event);
+            }
+
+            if ($callback) {
+                $this->response((string) $callback);
+                break;
             }
 
             if (!isset($data['continue_processing']) or !$data['continue_processing']) {
@@ -138,6 +143,11 @@ class VkBot
     private function ok(): void
     {
         echo 'ok';
+    }
+
+    private function response(int|string $response): void
+    {
+        die($response);
     }
 
     private function validateEvent($event): bool
