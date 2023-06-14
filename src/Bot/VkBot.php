@@ -11,7 +11,6 @@ use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
 use Fastik1\Vkfast\Bot\Rules\Rule;
 use Fastik1\Vkfast\Utils;
-use stdClass;
 
 class VkBot
 {
@@ -178,7 +177,7 @@ class VkBot
         return $this->prefix;
     }
 
-    private function getEvent(): stdClass|null
+    private function getEvent(): object|null
     {
         $event = json_decode(file_get_contents('php://input'));
 

@@ -4,11 +4,9 @@
 namespace Fastik1\Vkfast;
 
 
-use stdClass;
-
 class Utils
 {
-    public static function getArrayElementByString(stdClass $data, array|string|int $keys): mixed
+    public static function getArrayElementByString(object $data, array|string|int $keys): mixed
     {
         if (is_string($keys)) $keys = explode('.', $keys);
 

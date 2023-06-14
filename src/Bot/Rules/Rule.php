@@ -3,11 +3,10 @@
 
 namespace Fastik1\Vkfast\Bot\Rules;
 
-use stdClass;
 
 class Rule
 {
-    public static function validateRules(array $rules, stdClass $event): bool
+    public static function validateRules(array $rules, object $event): bool
     {
         foreach ($rules as $rule) {
             if (!$rule->passes($event)) {
