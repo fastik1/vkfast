@@ -3,13 +3,12 @@
 namespace Fastik1\Vkfast\Bot;
 
 use Fastik1\Vkfast\Api\VkApi;
-use Fastik1\Vkfast\Bot\Commands\Command;
 use Fastik1\Vkfast\Bot\Events\GroupEvent;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Interfaces\CommandInterface;
 use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
-use Fastik1\Vkfast\Bot\Rules\Rule;
+use Fastik1\Vkfast\Interfaces\RuleInterface;
 use Fastik1\Vkfast\Utils;
 
 class VkBot
@@ -38,17 +37,17 @@ class VkBot
 
     public function privateMessage($callback_function): self
     {
-        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rules(new isPrivateMessageRule());
+        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rule(new isPrivateMessageRule());
         return $this;
     }
 
     public function chatMessage($callback_function): self
     {
-        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rules(new isChatMessageRule());
+        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rule(new isChatMessageRule());
         return $this;
     }
 
-    public function rules(Rule|array $rules): self
+    public function rule(RuleInterface|array $rules): self
     {
         if (is_array($rules)) {
             foreach ($rules as $rule) {
@@ -103,13 +102,13 @@ class VkBot
                 continue;
             }
 
-            if (!Rule::validateRules($data['rules'] ?? [], $rawEvent)) {
+            if (!Utils::validateRules($rawEvent, $data['rules'] ?? [])) {
                 continue;
             }
 
             if (!empty($data['command'])) {
                 $commandText = Utils::getArrayElementByString($rawEvent, $data['command']['path']);
-                $commandData = Command::validate($data['command']['signatures'], $this->prefix, $commandText);
+                $commandData = Utils::validateCommand($data['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;
