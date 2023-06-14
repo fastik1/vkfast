@@ -5,7 +5,6 @@ namespace Fastik1\Vkfast\Bot\Events;
 
 
 use Fastik1\Vkfast\Api\VkApi;
-use stdClass;
 
 class Event
 {

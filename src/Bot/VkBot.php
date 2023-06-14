@@ -87,7 +87,13 @@ class VkBot
             return;
         }
 
-        $event = new Event($this->api);
+        $classEvent = '\\Fastik1\\Vkfast\\Bot\\Events\\' . Utils::eventTypeToClassName($rawEvent->type);
+
+        if (!class_exists($classEvent)) {
+            $classEvent = Event::class;
+        }
+
+        $event = new $classEvent($this->api);
 
         foreach ($rawEvent->object ?? $rawEvent as $key => $value) {
             $event->{$key} = $value;
