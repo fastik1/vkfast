@@ -31,6 +31,15 @@ class Utils
         return implode('', $words);
     }
 
+    public static function classNameToEvent(string $class): string
+    {
+        $array = explode('\\', $class);
+        $string = end($array);
+        $string = preg_replace('/([a-z])([A-Z])/', '$1_$2', $string);
+        $string = strtolower($string);
+        return $string;
+    }
+
     public static function validateRules(object $event, array $rules): bool
     {
         foreach ($rules as $rule) {

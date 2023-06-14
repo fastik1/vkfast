@@ -3,8 +3,8 @@
 namespace Fastik1\Vkfast\Bot;
 
 use Fastik1\Vkfast\Api\VkApi;
-use Fastik1\Vkfast\Bot\Events\GroupEvent;
 use Fastik1\Vkfast\Bot\Events\Event;
+use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Interfaces\CommandInterface;
 use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
@@ -23,27 +23,27 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $event, $callback_function): self
+    public function on(string $eventClass, $callback_function): self
     {
-        array_push($this->handlers, ['event' => $event, 'callback_function' => $callback_function]);
+        array_push($this->handlers, ['event' => $eventClass, 'callback_function' => $callback_function]);
         return $this;
     }
 
     public function message($callback_function): self
     {
-        $this->on(GroupEvent::MESSAGE_NEW, $callback_function);
+        $this->on(MessageNew::class, $callback_function);
         return $this;
     }
 
     public function privateMessage($callback_function): self
     {
-        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rule(new isPrivateMessageRule());
+        $this->on(MessageNew::class, $callback_function)->rule(new isPrivateMessageRule());
         return $this;
     }
 
     public function chatMessage($callback_function): self
     {
-        $this->on(GroupEvent::MESSAGE_NEW, $callback_function)->rule(new isChatMessageRule());
+        $this->on(MessageNew::class, $callback_function)->rule(new isChatMessageRule());
         return $this;
     }
 
@@ -98,7 +98,7 @@ class VkBot
         }
 
         foreach ($this->handlers as $data) {
-            if ($data['event'] !== $rawEvent->type) {
+            if (Utils::classNameToEvent($data['event']) !== $rawEvent->type) {
                 continue;
             }
 
@@ -122,6 +122,7 @@ class VkBot
                 }
 
                 $callback = $data['callback_function']($event, $commandData['command'], ...$commandData['arguments']);
+
             } else {
                 $callback = $data['callback_function']($event);
             }
