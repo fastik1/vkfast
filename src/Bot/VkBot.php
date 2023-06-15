@@ -2,9 +2,11 @@
 
 namespace Fastik1\Vkfast\Bot;
 
+use Exception;
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
+use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Interfaces\CommandInterface;
 use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
@@ -122,10 +124,15 @@ class VkBot
                     }
                 }
 
-                $callback = $data['callback_function']($event, $commandData['command'], ...$commandData['arguments']);
-
+                $callback_parameters = [$event, $commandData['command'], ...$commandData['arguments']];
             } else {
-                $callback = $data['callback_function']($event);
+                $callback_parameters = [$event];
+            }
+
+            try {
+                $callback = $data['callback_function'](...$callback_parameters);
+            } catch (Exception $exception) {
+                throw new VkBotException('Invalid callback function: ' . $exception->getMessage());
             }
 
             if ($callback) {
