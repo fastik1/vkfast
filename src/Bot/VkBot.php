@@ -92,8 +92,9 @@ class VkBot
         }
 
         $event = new $classEvent($this->api);
+        $event->raw = $rawEvent;
 
-        foreach ($rawEvent->object ?? $rawEvent as $key => $value) {
+        foreach ($event->raw->object ?? $event->raw as $key => $value) {
             $event->{$key} = $value;
         }
 

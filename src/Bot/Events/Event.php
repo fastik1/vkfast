@@ -11,6 +11,7 @@ class Event
 {
     public VkApi $api;
     public string $type;
+    public object $raw;
 
     public function __construct(VkApi $api)
     {
