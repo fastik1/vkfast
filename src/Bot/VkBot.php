@@ -79,9 +79,15 @@ class VkBot
         return $this;
     }
 
-    public function run(): void
+    public function run(array|object|null $rawEvent = null): void
     {
-        $rawEvent = $this->getEvent();
+        if (is_array($rawEvent)) {
+            $rawEvent = json_decode(json_encode($rawEvent));
+        }
+
+        if (!$rawEvent) {
+            $rawEvent = $this->getEvent();
+        }
 
         if (!$rawEvent) {
             return;
