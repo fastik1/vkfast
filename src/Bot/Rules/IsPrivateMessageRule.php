@@ -1,12 +1,8 @@
 <?php
 
-
 namespace Fastik1\Vkfast\Bot\Rules;
 
-
-use Fastik1\Vkfast\Interfaces\RuleInterface;
-
-class IsPrivateMessageRule implements RuleInterface
+class IsPrivateMessageRule extends Rule
 {
     public function passes($event): bool
     {

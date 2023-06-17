@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addLike(...$arguments)
@@ -36,7 +35,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method search(...$arguments)
  * @method unpin(...$arguments)
  */
-class Wall implements MethodInterface
+class Wall extends Method
 {
     private VkApiRequest $request;
 

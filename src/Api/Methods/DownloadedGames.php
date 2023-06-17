@@ -2,14 +2,13 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method getPaidStat(...$arguments)
  */
-class DownloadedGames implements MethodInterface
+class DownloadedGames extends Method
 {
     private VkApiRequest $request;
 

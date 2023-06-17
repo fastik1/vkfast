@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addStickersToFavorite(...$arguments)
@@ -13,7 +12,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getStickersKeywords(...$arguments)
  * @method removeStickersFromFavorit(...$arguments)
  */
-class Store implements MethodInterface
+class Store extends Method
 {
     private VkApiRequest $request;
 

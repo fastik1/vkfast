@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method getFriends(...$arguments)
@@ -12,7 +11,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getSubscriptions(...$arguments)
  * @method isDon(...$arguments)
  */
-class Donut implements MethodInterface
+class Donut extends Method
 {
     private VkApiRequest $request;
 

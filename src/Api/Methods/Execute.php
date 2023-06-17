@@ -2,12 +2,11 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
 use Fastik1\Vkfast\Api\VkApiRequest;
 
 /**
  */
-class Execute implements MethodInterface
+class Execute extends Method
 {
     private VkApiRequest $request;
 

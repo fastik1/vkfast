@@ -4,13 +4,13 @@ namespace Fastik1\Vkfast\Bot;
 
 use Exception;
 use Fastik1\Vkfast\Api\VkApi;
+use Fastik1\Vkfast\Bot\Commands\Command;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
+use Fastik1\Vkfast\Bot\Rules\Rule;
 use Fastik1\Vkfast\Exceptions\VkBotException;
-use Fastik1\Vkfast\Interfaces\CommandInterface;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
-use Fastik1\Vkfast\Interfaces\RuleInterface;
 use Fastik1\Vkfast\Utils;
 
 class VkBot
@@ -49,7 +49,7 @@ class VkBot
         return $this;
     }
 
-    public function rule(RuleInterface|array $rules): self
+    public function rule(Rule|array $rules): self
     {
         if (is_array($rules)) {
             foreach ($rules as $rule) {
@@ -62,7 +62,7 @@ class VkBot
         return $this;
     }
 
-    public function command(string|array $commands, string $path = 'object.message.text', CommandInterface|null $classCommand = null): self
+    public function command(string|array $commands, string $path = 'object.message.text', Command|null $classCommand = null): self
     {
         if (is_array($commands)) {
             $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => $commands, 'path' => $path, 'class' => $classCommand];
@@ -111,13 +111,13 @@ class VkBot
                 continue;
             }
 
-            if (!Utils::validateRules($rawEvent, $data['rules'] ?? [])) {
+            if (!Rule::_validateRules($rawEvent, $data['rules'] ?? [])) {
                 continue;
             }
 
             if (!empty($data['command'])) {
                 $commandText = Utils::getArrayElementByString($rawEvent, $data['command']['path']);
-                $commandData = Utils::validateCommand($data['command']['signatures'], $this->prefix, $commandText);
+                $commandData = Command::_validateCommand($data['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;

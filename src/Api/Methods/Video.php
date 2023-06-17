@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method add(...$arguments)
@@ -41,7 +40,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method startStreaming(...$arguments)
  * @method stopStreaming(...$arguments)
  */
-class Video implements MethodInterface
+class Video extends Method
 {
     private VkApiRequest $request;
 

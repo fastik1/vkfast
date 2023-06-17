@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method cancelSubscription(...$arguments)
@@ -16,7 +15,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getUserSubscriptions(...$arguments)
  * @method updateSubscription(...$arguments)
  */
-class Orders implements MethodInterface
+class Orders extends Method
 {
     private VkApiRequest $request;
 

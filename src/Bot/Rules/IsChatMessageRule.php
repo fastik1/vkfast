@@ -1,12 +1,8 @@
 <?php
 
-
 namespace Fastik1\Vkfast\Bot\Rules;
 
-
-use Fastik1\Vkfast\Interfaces\RuleInterface;
-
-class IsChatMessageRule implements RuleInterface
+class IsChatMessageRule extends Rule
 {
     public function passes($event): bool
     {

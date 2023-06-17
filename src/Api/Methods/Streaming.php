@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method getServerUrl(...$arguments)
@@ -13,7 +12,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getStem(...$arguments)
  * @method setSettings(...$arguments)
  */
-class Streaming implements MethodInterface
+class Streaming extends Method
 {
     private VkApiRequest $request;
 

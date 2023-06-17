@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addUsersToTestingGroup(...$arguments)
@@ -26,7 +25,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method sendRequest(...$arguments)
  * @method updateMetaForTestingGr(...$arguments)
  */
-class Apps implements MethodInterface
+class Apps extends Method
 {
     private VkApiRequest $request;
 

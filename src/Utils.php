@@ -39,30 +39,4 @@ class Utils
         $string = strtolower($string);
         return $string;
     }
-
-    public static function validateRules(object $event, array $rules): bool
-    {
-        foreach ($rules as $rule) {
-            if (!$rule->passes($event)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static function validateCommand(array $commands, string $prefix, string $text): bool|array
-    {
-        if (!str_starts_with($text, $prefix)) {
-            return false;
-        }
-
-        foreach ($commands as $command) {
-            if (explode(' ', substr($text, strlen($prefix)))[0] == $command) {
-                return ['command' => $command, 'arguments' => explode(' ', substr($text, strlen($prefix . $command) + 1))];
-            }
-        }
-
-        return false;
-    }
 }

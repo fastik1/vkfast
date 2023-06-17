@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method add(...$arguments)
@@ -40,7 +39,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method searchItems(...$arguments)
  * @method searchItemsBasic(...$arguments)
  */
-class Market implements MethodInterface
+class Market extends Method
 {
     private VkApiRequest $request;
 

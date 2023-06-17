@@ -2,15 +2,14 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method getComments(...$arguments)
  * @method getPages(...$arguments)
  */
-class Widgets implements MethodInterface
+class Widgets extends Method
 {
     private VkApiRequest $request;
 

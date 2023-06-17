@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method clearCache(...$arguments)
@@ -17,7 +16,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method save(...$arguments)
  * @method saveAccess(...$arguments)
  */
-class Pages implements MethodInterface
+class Pages extends Method
 {
     private VkApiRequest $request;
 

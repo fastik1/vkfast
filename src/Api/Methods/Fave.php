@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addArticle(...$arguments)
@@ -31,7 +30,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method setTags(...$arguments)
  * @method trackPageInteraction(...$arguments)
  */
-class Fave implements MethodInterface
+class Fave extends Method
 {
     private VkApiRequest $request;
 

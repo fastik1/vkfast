@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method create(...$arguments)
@@ -14,7 +13,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getById(...$arguments)
  * @method getUploadURL(...$arguments)
  */
-class PrettyCards implements MethodInterface
+class PrettyCards extends Method
 {
     private VkApiRequest $request;
 

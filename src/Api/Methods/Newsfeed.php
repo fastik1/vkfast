@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addBan(...$arguments)
@@ -23,7 +22,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method unignoreItem(...$arguments)
  * @method unsubscribe(...$arguments)
  */
-class Newsfeed implements MethodInterface
+class Newsfeed extends Method
 {
     private VkApiRequest $request;
 

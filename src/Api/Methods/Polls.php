@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addVote(...$arguments)
@@ -17,7 +16,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method getVoters(...$arguments)
  * @method savePhoto(...$arguments)
  */
-class Polls implements MethodInterface
+class Polls extends Method
 {
     private VkApiRequest $request;
 

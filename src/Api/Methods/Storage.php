@@ -2,16 +2,15 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method get(...$arguments)
  * @method getKeys(...$arguments)
  * @method set(...$arguments)
  */
-class Storage implements MethodInterface
+class Storage extends Method
 {
     private VkApiRequest $request;
 

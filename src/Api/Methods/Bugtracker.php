@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addCompanyGroupsMembers(...$arguments)
@@ -20,7 +19,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method setCompanyMemberRole(...$arguments)
  * @method setProductIsOver(...$arguments)
  */
-class Bugtracker implements MethodInterface
+class Bugtracker extends Method
 {
     private VkApiRequest $request;
 

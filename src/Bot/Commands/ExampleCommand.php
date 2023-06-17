@@ -2,9 +2,7 @@
 
 namespace Fastik1\Vkfast\Bot\Commands;
 
-use Fastik1\Vkfast\Interfaces\CommandInterface;
-
-class ExampleCommand implements CommandInterface
+class ExampleCommand extends Command
 {
     public function validate(object $event, string $command, array $arguments): bool|array
     {

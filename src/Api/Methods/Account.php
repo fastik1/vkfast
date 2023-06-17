@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method ban(...$arguments)
@@ -28,7 +27,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method unban(...$arguments)
  * @method unregisterDevice(...$arguments)
  */
-class Account implements MethodInterface
+class Account extends Method
 {
     private VkApiRequest $request;
 

@@ -2,9 +2,8 @@
 
 namespace Fastik1\Vkfast\Api\Methods;
 
-use Fastik1\Vkfast\Interfaces\MethodInterface;
-use Fastik1\Vkfast\Utils;
 use Fastik1\Vkfast\Api\VkApiRequest;
+use Fastik1\Vkfast\Utils;
 
 /**
  * @method addTopic(...$arguments)
@@ -21,7 +20,7 @@ use Fastik1\Vkfast\Api\VkApiRequest;
  * @method restoreComment(...$arguments)
  * @method unfixTopic(...$arguments)
  */
-class Board implements MethodInterface
+class Board extends Method
 {
     private VkApiRequest $request;
 
