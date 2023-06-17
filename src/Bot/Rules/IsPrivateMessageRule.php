@@ -6,7 +6,7 @@ namespace Fastik1\Vkfast\Bot\Rules;
 
 use Fastik1\Vkfast\Interfaces\RuleInterface;
 
-class isPrivateMessageRule implements RuleInterface
+class IsPrivateMessageRule implements RuleInterface
 {
     public function passes($event): bool
     {

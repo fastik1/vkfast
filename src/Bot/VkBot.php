@@ -8,8 +8,8 @@ use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Interfaces\CommandInterface;
-use Fastik1\Vkfast\Bot\Rules\isChatMessageRule;
-use Fastik1\Vkfast\Bot\Rules\isPrivateMessageRule;
+use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
+use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
 use Fastik1\Vkfast\Interfaces\RuleInterface;
 use Fastik1\Vkfast\Utils;
 
@@ -39,13 +39,13 @@ class VkBot
 
     public function privateMessage($callback_function): self
     {
-        $this->on(MessageNew::class, $callback_function)->rule(new isPrivateMessageRule());
+        $this->on(MessageNew::class, $callback_function)->rule(new IsPrivateMessageRule());
         return $this;
     }
 
     public function chatMessage($callback_function): self
     {
-        $this->on(MessageNew::class, $callback_function)->rule(new isChatMessageRule());
+        $this->on(MessageNew::class, $callback_function)->rule(new IsChatMessageRule());
         return $this;
     }
 

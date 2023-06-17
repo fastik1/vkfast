@@ -6,7 +6,7 @@ namespace Fastik1\Vkfast\Bot\Rules;
 
 use Fastik1\Vkfast\Interfaces\RuleInterface;
 
-class isChatMessageRule implements RuleInterface
+class IsChatMessageRule implements RuleInterface
 {
     public function passes($event): bool
     {
