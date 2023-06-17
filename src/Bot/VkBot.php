@@ -143,7 +143,7 @@ class VkBot
 
             if ($callback) {
                 $this->response((string) $callback);
-                break;
+                return;
             }
 
             if (!isset($data['continue_processing']) or !$data['continue_processing']) {
@@ -156,12 +156,12 @@ class VkBot
 
     private function ok(): void
     {
-        echo 'ok';
+        $this->response('ok');
     }
 
     private function response(int|string $response): void
     {
-        die($response);
+        echo $response;
     }
 
     private function validateEvent($event): bool
