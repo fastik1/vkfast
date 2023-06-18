@@ -116,7 +116,7 @@ class VkBot
             }
 
             if (!empty($data['command'])) {
-                $commandText = Utils::getArrayElementByString($rawEvent, $data['command']['path']);
+                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $data['command']['path'])));
                 $commandData = Command::_validateCommand($data['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
