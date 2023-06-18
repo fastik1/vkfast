@@ -14,7 +14,10 @@
     "autoload": {
         "psr-4": {
             "Fastik1\\Vkfast\\": "src/"
-        }
+        },
+        "exclude-from-classmap": [
+            "/tests/"
+        ]
     },
     "authors": [
         {

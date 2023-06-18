@@ -1,6 +1,6 @@
 <?php
 
-namespace Fastik1\Vkfast\Tests\VkBotClassTests;
+namespace Fastik1\Vkfast\Tests;
 
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Events\Confirmation;
