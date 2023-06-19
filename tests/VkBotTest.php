@@ -160,9 +160,89 @@ class VkBotTest extends TestCase
     }
 
     /**
-     * @dataProvider CommandHandlerProvider
+     * @dataProvider CalledCommandCallbackFunction
      */
-    public function test_command_handler(string $textMessage)
+    public function test_called_command_callback_function(string $textMessage)
+    {
+        $this->expectOutputString(self::OK);
+
+        $this->bot->setPrefix('!');
+
+        $this->event_message_new['object']['message']['text'] = $textMessage;
+
+        $test_is_call = false;
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event, $command, ...$arguments) use (&$test_is_call) {
+            $test_is_call = true;
+        })->command('debug');
+
+        $this->bot->run($this->event_message_new);
+
+        $this->assertTrue($test_is_call);
+    }
+
+    public static function CalledCommandCallbackFunction()
+    {
+        return [
+            ['!debug'],
+            [' !debug'],
+            ['!debug '],
+            ['!debug parameter1 parameter2 parameter3'],
+            [' !debug parameter1 parameter2 parameter3'],
+            ['!debug  parameter1 parameter2 parameter3'],
+            ['!debug parameter1 parameter2 '],
+            [' !debug parameter1 parameter2 '],
+            ['!debug  parameter1 parameter2'],
+            ['!debug parameter1 parameter2'],
+            [' !debug parameter1 parameter2'],
+            ['!debug  parameter1 parameter2'],
+        ];
+    }
+
+    /**
+     * @dataProvider NotCalledCommandCallbackFunction
+     */
+    public function test_not_called_command_callback_function(string $textMessage)
+    {
+        $this->expectOutputString(self::OK);
+
+        $this->bot->setPrefix('!');
+
+        $this->event_message_new['object']['message']['text'] = $textMessage;
+
+        $test_is_call = false;
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event, $command, ...$arguments) use (&$test_is_call) {
+            $test_is_call = true;
+        })->command('debug');
+
+        $this->bot->run($this->event_message_new);
+
+        $this->assertFalse($test_is_call);
+    }
+
+    public static function NotCalledCommandCallbackFunction(): array
+    {
+        return [
+            ['debug'],
+            [' debug'],
+            ['debug '],
+            ['debug parameter1 parameter2 parameter3'],
+            [' debug parameter1 parameter2 parameter3'],
+            ['debug  parameter1 parameter2 parameter3'],
+            ['debug parameter1 parameter2 '],
+            [' debug parameter1 parameter2 '],
+            ['debug  parameter1 parameter2'],
+            ['debug parameter1 parameter2'],
+            [' debug parameter1 parameter2'],
+            ['debug  parameter1 parameter2'],
+        ];
+    }
+
+    /**
+     * @dataProvider ArgumentsCommandCallbackFunction
+     */
+    public function test_arguments_command_callback_function(string $textMessage)
     {
         $this->expectOutputString(self::OK);
 
@@ -182,51 +262,27 @@ class VkBotTest extends TestCase
 
         $this->bot->run($this->event_message_new);
 
-        $explode = explode(' ', trim(preg_replace('/\s+/', ' ', $textMessage)));
-
-        if ($explode[0] ?? null) {
-            $command = substr($explode[0], 1);
-            if (str_starts_with($explode[0], $this->bot->getPrefix())) {
-                $this->assertTrue($test_is_call);
-                $this->assertEquals($command, $test_command);
-
-                array_shift($explode);
-
-                $this->assertSameSize($explode, $test_arguments);
-
-                foreach ($explode as $key => $value) {
-                    $this->assertArrayHasKey($key, $test_arguments);
-                    $this->assertEquals($value, $test_arguments[$key]);
-                }
-            } else {
-                $this->assertNotEquals($command, $test_command);
-                $this->assertNull($test_command);
-                $this->assertNull($test_arguments);
-            }
-        }
+        $this->assertTrue($test_is_call);
+        $this->assertIsArray($test_arguments);
+        $this->assertArrayHasKey(0, $test_arguments);
+        $this->assertArrayHasKey(1, $test_arguments);
+        $this->assertArrayHasKey(2, $test_arguments);
+        $this->assertEquals('parameter1', $test_arguments[0]);
+        $this->assertEquals('parameter2', $test_arguments[1]);
+        $this->assertEquals('parameter3', $test_arguments[2]);
     }
 
-    public static function CommandHandlerProvider(): array
+    public static function ArgumentsCommandCallbackFunction(): array
     {
         return [
-            ['Hello'],
-            ['!debug'],
-            [' !debug'],
-            ['!debug '],
-            ['debug'],
             ['!debug parameter1 parameter2 parameter3'],
+            ['!debug parameter1 parameter2  parameter3'],
+            ['!debug parameter1  parameter2 parameter3'],
             [' !debug parameter1 parameter2 parameter3'],
-            ['!debug  parameter1 parameter2 parameter3'],
-            ['debug parameter1 parameter2 '],
-            ['!debug parameter1 parameter2 '],
-            [' !debug parameter1 parameter2 '],
-            ['!debug  parameter1 parameter2'],
-            ['debug parameter1 parameter2'],
-            ['debug parameter1 parameter2'],
-            ['!debug parameter1 parameter2'],
-            [' !debug parameter1 parameter2'],
-            ['!debug  parameter1 parameter2'],
-            ['debug parameter1 parameter2'],
+            ['!debug parameter1    parameter2 parameter3'],
+            ['!debug parameter1 parameter2 parameter3   '],
+            ['!debug   parameter1 parameter2 parameter3'],
+            ['! debug parameter1 parameter2 parameter3'],
         ];
     }
 }

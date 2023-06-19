@@ -13,7 +13,7 @@ abstract class Command
         }
 
         foreach ($commands as $command) {
-            if (explode(' ', substr($text, strlen($prefix)))[0] == $command) {
+            if (explode(' ', trim(substr($text, strlen($prefix))))[0] == $command) {
                 return ['command' => $command, 'arguments' => array_diff(explode(' ', trim(substr($text, strlen($prefix . $command) + 1))), array(''))];
             }
         }
