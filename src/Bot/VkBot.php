@@ -8,6 +8,7 @@ use Fastik1\Vkfast\Bot\Commands\Command;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Bot\Rules\Rule;
+use Fastik1\Vkfast\Exceptions\VkApiError;
 use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
@@ -137,8 +138,10 @@ class VkBot
 
             try {
                 $callback = $data['callback_function'](...$callback_parameters);
+            } catch (VkApiError $exception) {
+                throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
             } catch (Exception $exception) {
-                throw new VkBotException('Invalid callback function: ' . $exception->getMessage());
+                throw new VkBotException('Invalid callback function: ' . $exception->getMessage(), $exception->getCode(), $exception);
             }
 
             if ($callback) {

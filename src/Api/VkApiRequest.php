@@ -6,6 +6,7 @@ namespace Fastik1\Vkfast\Api;
 
 use CurlHandle;
 use Fastik1\Vkfast\Exceptions\CurlException;
+use Fastik1\Vkfast\Exceptions\VkApiError;
 
 class VkApiRequest
 {
@@ -13,12 +14,14 @@ class VkApiRequest
     private float $version;
     private CurlHandle $curl;
     const API_URL = 'https://api.vk.com/method';
+    private bool $ignore_error = false;
 
-    public function __construct(string $access_token, float $version)
+    public function __construct(string $access_token, float $version, bool $ignore_error)
     {
         $this->access_token = $access_token;
         $this->version = $version;
         $this->curl = curl_init();
+        $this->ignore_error = $ignore_error;
     }
 
     public function apiRequest(string $method, array $parameters)
@@ -29,6 +32,10 @@ class VkApiRequest
             ]);
         } catch (CurlException $e) {
             return false;
+        }
+
+        if (($response->error ?? null) and !$this->ignore_error) {
+            throw new VkApiError($response->error->error_msg, $response->error->error_code);
         }
 
         return $response;

@@ -60,9 +60,9 @@ class VkApi
     private VkApiRequest $request;
     private array $instances = [];
 
-    public function __construct(string $access_token, float $version)
+    public function __construct(string $access_token, float $version, bool $ignore_error = false)
     {
-        $this->request = new VkApiRequest($access_token, $version);
+        $this->request = new VkApiRequest($access_token, $version, $ignore_error);
     }
 
     public function __get(string $name): mixed
