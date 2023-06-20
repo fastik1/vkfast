@@ -7,6 +7,7 @@ use Fastik1\Vkfast\Bot\Events\Confirmation;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
+use Fastik1\Vkfast\Bot\Rules\Rule;
 use Fastik1\Vkfast\Bot\VkBot;
 use PHPUnit\Framework\TestCase;
 
@@ -160,7 +161,7 @@ class VkBotTest extends TestCase
     }
 
     /**
-     * @dataProvider CalledCommandCallbackFunction
+     * @dataProvider calledCommandCallbackFunctionProvider
      */
     public function test_called_command_callback_function(string $textMessage)
     {
@@ -181,7 +182,7 @@ class VkBotTest extends TestCase
         $this->assertTrue($test_is_call);
     }
 
-    public static function CalledCommandCallbackFunction()
+    public static function calledCommandCallbackFunctionProvider()
     {
         return [
             ['!debug'],
@@ -200,7 +201,7 @@ class VkBotTest extends TestCase
     }
 
     /**
-     * @dataProvider NotCalledCommandCallbackFunction
+     * @dataProvider notCalledCommandCallbackFunctionProvider
      */
     public function test_not_called_command_callback_function(string $textMessage)
     {
@@ -221,7 +222,7 @@ class VkBotTest extends TestCase
         $this->assertFalse($test_is_call);
     }
 
-    public static function NotCalledCommandCallbackFunction(): array
+    public static function notCalledCommandCallbackFunctionProvider(): array
     {
         return [
             ['debug'],
@@ -240,7 +241,7 @@ class VkBotTest extends TestCase
     }
 
     /**
-     * @dataProvider ArgumentsCommandCallbackFunction
+     * @dataProvider argumentsCommandCallbackFunctionProvider
      */
     public function test_arguments_command_callback_function(string $textMessage)
     {
@@ -272,7 +273,7 @@ class VkBotTest extends TestCase
         $this->assertEquals('parameter3', $test_arguments[2]);
     }
 
-    public static function ArgumentsCommandCallbackFunction(): array
+    public static function argumentsCommandCallbackFunctionProvider(): array
     {
         return [
             ['!debug parameter1 parameter2 parameter3'],
@@ -284,5 +285,48 @@ class VkBotTest extends TestCase
             ['!debug   parameter1 parameter2 parameter3'],
             ['! debug parameter1 parameter2 parameter3'],
         ];
+    }
+
+    public function test_add_rule()
+    {
+        $this->expectOutputString('');
+
+        $this->bot->on(MessageNew::class, function () {})
+            ->rule(new IsPrivateMessageRule);
+
+        $this->assertArrayHasKey(0, $this->bot->getHandlers());
+        $this->assertArrayHasKey('rules', $this->bot->getHandlers()[0]);
+        $this->assertNotEmpty($this->bot->getHandlers()[0]['rules'][0]);
+        $this->assertInstanceOf(IsPrivateMessageRule::class, $this->bot->getHandlers()[0]['rules'][0]);
+    }
+
+    public function test_called_callback_function_with_rule()
+    {
+        $this->expectOutputString(self::OK);
+
+        $test_is_call = false;
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call) {
+            $test_is_call = true;
+        })->rule(new IsPrivateMessageRule);
+
+        $this->bot->run($this->event_message_new);
+
+        $this->assertTrue($test_is_call);
+    }
+
+    public function test_not_called_callback_function_with_rule()
+    {
+        $this->expectOutputString(self::OK);
+
+        $test_is_call = false;
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call) {
+            $test_is_call = true;
+        })->rule(new IsChatMessageRule);
+
+        $this->bot->run($this->event_message_new);
+
+        $this->assertFalse($test_is_call);
     }
 }
