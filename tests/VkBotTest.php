@@ -157,7 +157,70 @@ class VkBotTest extends TestCase
         }
         $this->assertTrue($is_found_rule);
     }
-    
+
+    /**
+     * Тест на проверку возврата пустой строки если callback-функция вернула пустую строку
+     */
+    public function test_return_empty_string_callback_function()
+    {
+        $this->expectOutputString('');
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) {
+            return '';
+        });
+
+        $this->bot->run($this->event_message_new);
+    }
+
+    /**
+     * Тест на проверку возврата 'ok' в случае, если callback-функция вернула null
+     */
+    public function test_return_null_callback_function()
+    {
+        $this->expectOutputString(self::OK);
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) {
+            return null;
+        });
+
+        $this->bot->run($this->event_message_new);
+    }
+
+    /**
+     * Тест на проверку возврата 'ok' в случае, если callback-функция ничего не вернула
+     */
+    public function test_no_return_callback_function()
+    {
+        $this->expectOutputString(self::OK);
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) {});
+
+        $this->bot->run($this->event_message_new);
+    }
+
+    /**
+     * Тест на проверку возврата bool в случае, если callback-функция вернула bool
+     * @dataProvider returnBoolCallbackFunction
+     */
+    public function test_return_bool_callback_function(bool $value)
+    {
+        $this->expectOutputString((string) $value);
+
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use ($value) {
+            return $value;
+        });
+
+        $this->bot->run($this->event_message_new);
+    }
+
+    public static function returnBoolCallbackFunction(): array
+    {
+        return [
+            [true],
+            [false],
+        ];
+    }
+
     /**
      * Тест вызова callback-функции при поступлении события "message_new"
      */
