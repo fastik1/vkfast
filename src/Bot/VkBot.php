@@ -144,7 +144,7 @@ class VkBot
                 throw new VkBotException('Invalid callback function: ' . $exception->getMessage(), $exception->getCode(), $exception);
             }
 
-            if ($callback) {
+            if (!is_null($callback)) {
                 $this->response((string) $callback);
                 return;
             }
