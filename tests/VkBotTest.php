@@ -15,7 +15,16 @@ class VkBotTest extends TestCase
 {
     protected VkBot $bot;
     protected VkApi $api;
+
+    /*
+     * Строка, которую возвращает библиотека при базовой обработке события
+     * Является меткой для Callback VK API, что событие успешно получено
+     */
     const OK = 'ok';
+
+    /**
+     * Объект события, который приходит при событии "message_new"
+     */
     protected array $event_message_new = [
         "group_id" => 201026442,
         "type" => "message_new",
@@ -56,6 +65,10 @@ class VkBotTest extends TestCase
             ]
         ]
     ];
+
+    /**
+     * Объект события, который приходит при событии "confirmation" (подтверждение callback-адреса)
+     */
     protected array $event_confirmation = [
         "group_id" => 201026442,
         "event_id" => "883541ca9fa9d981ac37b674a02fe1d310ec6092",
@@ -74,6 +87,10 @@ class VkBotTest extends TestCase
         unset($this->api, $this->bot);
     }
 
+    /**
+     * Тест на добавление нового события
+     * Порядок проверки: отсутствие событий, добавилось ли событие
+     */
     public function test_on_method()
     {
         $this->assertCount(0, $this->bot->getHandlers());
@@ -83,6 +100,10 @@ class VkBotTest extends TestCase
         $this->assertCount(1, $this->bot->getHandlers());
     }
 
+    /**
+     * Тест на добавление нового события "message_new" с помощью хелпера message() для обработки всех событий данного типа
+     * Порядок проверки: отсутствие событий, добавилось ли событие, отсутствие доп. правил (rules) для добавленного события
+     */
     public function test_message_method()
     {
         $this->assertCount(0, $this->bot->getHandlers());
@@ -93,6 +114,10 @@ class VkBotTest extends TestCase
         $this->assertArrayNotHasKey('rules', $this->bot->getHandlers()[0]);
     }
 
+    /**
+     * Тест на добавление нового события "message_new" с помощью хелпера privateMessage() только для обработки личных сообщений
+     * Порядок проверки: отсутствие событий, добавилось ли событие, наличие правил (rules), наличие правила IsPrivateMessageRule
+     */
     public function test_privateMessage_method()
     {
         $this->assertCount(0, $this->bot->getHandlers());
@@ -111,6 +136,10 @@ class VkBotTest extends TestCase
         $this->assertTrue($is_finded_rule);
     }
 
+    /**
+     * Тест на добавление нового события "message_new" с помощью хелпера privateMessage() только для обработки сообщений из чата
+     * Порядок проверки: отсутствие событий, добавилось ли событие, наличие правил (rules), наличие правила IsChatMessageRule
+     */
     public function test_chatMessage_method()
     {
         $this->assertCount(0, $this->bot->getHandlers());
@@ -128,7 +157,10 @@ class VkBotTest extends TestCase
         }
         $this->assertTrue($is_found_rule);
     }
-
+    
+    /**
+     * Тест вызова callback-функции при поступлении события "message_new"
+     */
     public function test_event_message_new_handler()
     {
         $this->expectOutputString(self::OK);
@@ -144,6 +176,9 @@ class VkBotTest extends TestCase
         $this->assertTrue($is_call);
     }
 
+    /**
+     * Тест вызова callback-функции и возврата значения callback-функции при поступлении события "confirmation"
+     */
     public function test_event_confirmation_handler()
     {
         $this->expectOutputString('confirmation');
@@ -161,6 +196,7 @@ class VkBotTest extends TestCase
     }
 
     /**
+     * Тест вызова callback-функции при поступлении команды разной, но валидной формы
      * @dataProvider calledCommandCallbackFunctionProvider
      */
     public function test_called_command_callback_function(string $textMessage)
@@ -201,6 +237,7 @@ class VkBotTest extends TestCase
     }
 
     /**
+     * Тест отсутствия вызова callback-функции при поступлении команды не валидной команды
      * @dataProvider notCalledCommandCallbackFunctionProvider
      */
     public function test_not_called_command_callback_function(string $textMessage)
@@ -241,6 +278,8 @@ class VkBotTest extends TestCase
     }
 
     /**
+     * Тест обработки валидных команд и правильном возврате аргументов
+     * Порядок проверки: вызов callback-функции, является ли переменная массивом, есть ли в массиве нужные индексы, правильно ли распределены в массиве аргументы команды
      * @dataProvider argumentsCommandCallbackFunctionProvider
      */
     public function test_arguments_command_callback_function(string $textMessage)
@@ -287,6 +326,10 @@ class VkBotTest extends TestCase
         ];
     }
 
+    /**
+     * Тест на добавление правила
+     * Порядок проверки: добавление нового обработчика, наличие внутри массива с правилами, проверка на НЕ пустоту первого правила, проверка на является ли первое правило инстансом добавленного правила
+     */
     public function test_add_rule()
     {
         $this->expectOutputString('');
@@ -300,6 +343,10 @@ class VkBotTest extends TestCase
         $this->assertInstanceOf(IsPrivateMessageRule::class, $this->bot->getHandlers()[0]['rules'][0]);
     }
 
+    /**
+     * Тест на работу правила
+     * Базовое событие "message_new" является личным сообщением, поэтому правило IsPrivateMessageRule должно сработать и запустить callback-функцию
+     */
     public function test_called_callback_function_with_rule()
     {
         $this->expectOutputString(self::OK);
@@ -315,6 +362,10 @@ class VkBotTest extends TestCase
         $this->assertTrue($test_is_call);
     }
 
+    /**
+     * Тест на работу правила
+     * Базовое событие "message_new" является личным сообщением, поэтому правило IsChatMessageRule НЕ должно сработать и НЕ запустить callback-функцию
+     */
     public function test_not_called_callback_function_with_rule()
     {
         $this->expectOutputString(self::OK);
