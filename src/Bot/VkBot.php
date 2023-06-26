@@ -112,7 +112,7 @@ class VkBot
                 continue;
             }
 
-            if (!Rule::_validateRules($rawEvent, $data['rules'] ?? [])) {
+            if (!Rule::_validateRules($event, $data['rules'] ?? [])) {
                 continue;
             }
 

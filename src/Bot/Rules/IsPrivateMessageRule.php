@@ -2,10 +2,13 @@
 
 namespace Fastik1\Vkfast\Bot\Rules;
 
+use Fastik1\Vkfast\Bot\Events\Event;
+use Fastik1\Vkfast\Bot\Events\MessageNew;
+
 class IsPrivateMessageRule extends Rule
 {
-    public function passes($event): bool
+    public function passes(MessageNew|Event $event): bool
     {
-        return $event->object->message->peer_id == $event->object->message->from_id;
+        return $event->message->peer_id == $event->message->from_id;
     }
 }
