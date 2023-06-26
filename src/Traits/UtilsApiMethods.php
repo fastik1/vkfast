@@ -4,7 +4,7 @@
 namespace Fastik1\Vkfast\Traits;
 
 
-trait ConvertId
+trait UtilsApiMethods
 {
     public function convertUserId(string|int $value): int|bool
     {

@@ -5,7 +5,7 @@ namespace Fastik1\Vkfast\Api;
 use CURLFile;
 use Fastik1\Vkfast\Exceptions\VkApiException;
 use Fastik1\Vkfast\Api\Keyboard\Keyboard;
-use Fastik1\Vkfast\Traits\ConvertId;
+use Fastik1\Vkfast\Traits\UtilsApiMethods;
 
 /**
  * @property \Fastik1\Vkfast\Api\Methods\Account account()
@@ -55,7 +55,7 @@ use Fastik1\Vkfast\Traits\ConvertId;
  */
 class VkApi
 {
-    use ConvertId;
+    use UtilsApiMethods;
 
     private VkApiRequest $request;
     private array $instances = [];
