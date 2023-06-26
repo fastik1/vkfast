@@ -4,9 +4,11 @@
 namespace Fastik1\Vkfast\Bot\Rules;
 
 
+use Fastik1\Vkfast\Bot\Events\Event;
+
 abstract class Rule
 {
-    abstract public function passes($event): bool;
+    abstract public function passes(Event $event): bool;
 
     public static function _validateRules(object $event, array $rules): bool
     {
