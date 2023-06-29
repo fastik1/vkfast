@@ -26,27 +26,27 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $eventClass, $callback_function): self
+    public function on(string $eventClass, $action): self
     {
-        array_push($this->handlers, ['event' => $eventClass, 'callback_function' => $callback_function]);
+        array_push($this->handlers, ['event' => $eventClass, 'action' => $action]);
         return $this;
     }
 
-    public function message($callback_function): self
+    public function message($action): self
     {
-        $this->on(MessageNew::class, $callback_function);
+        $this->on(MessageNew::class, $action);
         return $this;
     }
 
-    public function privateMessage($callback_function): self
+    public function privateMessage($action): self
     {
-        $this->on(MessageNew::class, $callback_function)->rule(new IsPrivateMessageRule());
+        $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageRule());
         return $this;
     }
 
-    public function chatMessage($callback_function): self
+    public function chatMessage($action): self
     {
-        $this->on(MessageNew::class, $callback_function)->rule(new IsChatMessageRule());
+        $this->on(MessageNew::class, $action)->rule(new IsChatMessageRule());
         return $this;
     }
 
@@ -137,7 +137,7 @@ class VkBot
             }
 
             try {
-                $callback = $data['callback_function'](...$callback_parameters);
+                $callback = $data['action'](...$callback_parameters);
             } catch (VkApiError $exception) {
                 throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
             } catch (Exception $exception) {
