@@ -2,6 +2,7 @@
 
 namespace Fastik1\Vkfast\Bot;
 
+use Closure;
 use Exception;
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Commands\Command;
@@ -13,6 +14,7 @@ use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
 use Fastik1\Vkfast\Utils;
+use PhpParser\Node\Expr\Array_;
 
 class VkBot
 {
@@ -26,25 +28,25 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $eventClass, $action): self
+    public function on(string $eventClass, Closure|Array $action): self
     {
         array_push($this->handlers, ['event' => $eventClass, 'action' => $action]);
         return $this;
     }
 
-    public function message($action): self
+    public function message(Closure|Array $action): self
     {
         $this->on(MessageNew::class, $action);
         return $this;
     }
 
-    public function privateMessage($action): self
+    public function privateMessage(Closure|Array $action): self
     {
         $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageRule());
         return $this;
     }
 
-    public function chatMessage($action): self
+    public function chatMessage(Closure|Array $action): self
     {
         $this->on(MessageNew::class, $action)->rule(new IsChatMessageRule());
         return $this;
@@ -137,7 +139,13 @@ class VkBot
             }
 
             try {
-                $callback = $data['action'](...$callback_parameters);
+                if (is_array($data['action'])) {
+                    $classHandler = new $data['action'][0];
+                    $methodHandler = $data['action'][1];
+                    $callback = $classHandler->$methodHandler(...$callback_parameters);
+                } else {
+                    $callback = $data['action'](...$callback_parameters);
+                }
             } catch (VkApiError $exception) {
                 throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
             } catch (Exception $exception) {
