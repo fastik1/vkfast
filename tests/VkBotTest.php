@@ -2,6 +2,8 @@
 
 namespace Fastik1\Vkfast\Tests;
 
+require_once __DIR__ . '/ExampleTestClassForEventHandlers.php';
+
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Events\Confirmation;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
@@ -237,6 +239,18 @@ class VkBotTest extends TestCase
         $this->bot->run($this->event_message_new);
 
         $this->assertTrue($is_call);
+    }
+
+    /**
+     * Тест вызова метода класса при поступлении события "message_new"
+     */
+    public function test_event_message_new_handler_for_class_method()
+    {
+        $this->expectOutputString(ExampleTestClassForEventHandlers::RETURN);
+
+        $this->bot->on(MessageNew::class, [ExampleTestClassForEventHandlers::class, 'messageNewHandler']);
+
+        $this->bot->run($this->event_message_new);
     }
 
     /**
