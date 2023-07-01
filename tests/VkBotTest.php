@@ -7,9 +7,9 @@ require_once __DIR__ . '/ExampleTestClassForEventHandlers.php';
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Events\Confirmation;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
-use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
-use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
-use Fastik1\Vkfast\Bot\Rules\Rule;
+use Fastik1\Vkfast\Bot\Rules\IsChatMessageBaseRule;
+use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageBaseRule;
+use Fastik1\Vkfast\Bot\Rules\BaseRule;
 use Fastik1\Vkfast\Bot\VkBot;
 use PHPUnit\Framework\TestCase;
 
@@ -131,7 +131,7 @@ class VkBotTest extends TestCase
 
         $is_finded_rule = false;
         foreach ($this->bot->getHandlers()[0]['rules'] as $rule) {
-            if (IsPrivateMessageRule::class == $rule::class) {
+            if (IsPrivateMessageBaseRule::class == $rule::class) {
                 $is_finded_rule = true;
             }
         }
@@ -153,7 +153,7 @@ class VkBotTest extends TestCase
 
         $is_found_rule = false;
         foreach ($this->bot->getHandlers()[0]['rules'] as $rule) {
-            if (IsChatMessageRule::class == $rule::class) {
+            if (IsChatMessageBaseRule::class == $rule::class) {
                 $is_found_rule = true;
             }
         }
@@ -441,12 +441,12 @@ class VkBotTest extends TestCase
         $this->expectOutputString('');
 
         $this->bot->on(MessageNew::class, function () {})
-            ->rule(new IsPrivateMessageRule);
+            ->rule(new IsPrivateMessageBaseRule);
 
         $this->assertArrayHasKey(0, $this->bot->getHandlers());
         $this->assertArrayHasKey('rules', $this->bot->getHandlers()[0]);
         $this->assertNotEmpty($this->bot->getHandlers()[0]['rules'][0]);
-        $this->assertInstanceOf(IsPrivateMessageRule::class, $this->bot->getHandlers()[0]['rules'][0]);
+        $this->assertInstanceOf(IsPrivateMessageBaseRule::class, $this->bot->getHandlers()[0]['rules'][0]);
     }
 
     /**
@@ -461,7 +461,7 @@ class VkBotTest extends TestCase
 
         $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call) {
             $test_is_call = true;
-        })->rule(new IsPrivateMessageRule);
+        })->rule(new IsPrivateMessageBaseRule);
 
         $this->bot->run($this->event_message_new);
 
@@ -480,7 +480,7 @@ class VkBotTest extends TestCase
 
         $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call) {
             $test_is_call = true;
-        })->rule(new IsChatMessageRule);
+        })->rule(new IsChatMessageBaseRule);
 
         $this->bot->run($this->event_message_new);
 

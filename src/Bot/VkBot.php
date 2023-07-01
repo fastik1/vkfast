@@ -5,14 +5,14 @@ namespace Fastik1\Vkfast\Bot;
 use Closure;
 use Exception;
 use Fastik1\Vkfast\Api\VkApi;
-use Fastik1\Vkfast\Bot\Commands\Command;
+use Fastik1\Vkfast\Bot\Commands\BaseCommand;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
-use Fastik1\Vkfast\Bot\Rules\Rule;
+use Fastik1\Vkfast\Bot\Rules\BaseRule;
 use Fastik1\Vkfast\Exceptions\VkApiError;
 use Fastik1\Vkfast\Exceptions\VkBotException;
-use Fastik1\Vkfast\Bot\Rules\IsChatMessageRule;
-use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageRule;
+use Fastik1\Vkfast\Bot\Rules\IsChatMessageBaseRule;
+use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageBaseRule;
 use Fastik1\Vkfast\Utils;
 use PhpParser\Node\Expr\Array_;
 
@@ -42,17 +42,17 @@ class VkBot
 
     public function privateMessage(Closure|Array $action): self
     {
-        $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageRule());
+        $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageBaseRule());
         return $this;
     }
 
     public function chatMessage(Closure|Array $action): self
     {
-        $this->on(MessageNew::class, $action)->rule(new IsChatMessageRule());
+        $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
         return $this;
     }
 
-    public function rule(Rule|array $rules): self
+    public function rule(BaseRule|array $rules): self
     {
         if (is_array($rules)) {
             foreach ($rules as $rule) {
@@ -65,7 +65,7 @@ class VkBot
         return $this;
     }
 
-    public function command(string|array $commands, string $path = 'object.message.text', Command|null $classCommand = null): self
+    public function command(string|array $commands, string $path = 'object.message.text', BaseCommand|null $classCommand = null): self
     {
         if (is_array($commands)) {
             $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => $commands, 'path' => $path, 'class' => $classCommand];
@@ -134,13 +134,13 @@ class VkBot
                 continue;
             }
 
-            if (!Rule::_validateRules($event, $handler['rules'] ?? [])) {
+            if (!BaseRule::_validateRules($event, $handler['rules'] ?? [])) {
                 continue;
             }
 
             if (!empty($handler['command'])) {
                 $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler['command']['path'])));
-                $commandData = Command::_validateCommand($handler['command']['signatures'], $this->prefix, $commandText);
+                $commandData = BaseCommand::_validateCommand($handler['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;

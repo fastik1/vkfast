@@ -32,7 +32,7 @@ namespace Fastik1\Vkfast\Bot\Events\Objects;
  * @property ?int $update_time
  * @property ?bool $was_listened
  */
-class Message extends Obj
+class Message extends BaseObject
 {
 
 }

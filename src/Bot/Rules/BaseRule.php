@@ -6,7 +6,7 @@ namespace Fastik1\Vkfast\Bot\Rules;
 
 use Fastik1\Vkfast\Bot\Events\Event;
 
-abstract class Rule
+abstract class BaseRule
 {
     abstract public function passes(Event $event): bool;
 

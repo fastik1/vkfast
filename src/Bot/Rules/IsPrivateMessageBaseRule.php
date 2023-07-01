@@ -5,7 +5,7 @@ namespace Fastik1\Vkfast\Bot\Rules;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 
-class IsPrivateMessageRule extends Rule
+class IsPrivateMessageBaseRule extends BaseRule
 {
     public function passes(MessageNew|Event $event): bool
     {
