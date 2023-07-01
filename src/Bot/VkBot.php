@@ -123,31 +123,31 @@ class VkBot
     {
         $is_any_handler_found = false;
 
-        foreach ($this->handlers as $data) {
+        foreach ($this->handlers as $handler) {
             if ($is_any_handler_found === true) {
-                if (!isset($data['continue_processing']) or !$data['continue_processing']) {
+                if (!isset($handler['continue_processing']) or !$handler['continue_processing']) {
                     continue;
                 }
             }
 
-            if (Utils::classNameToEvent($data['event']) !== $rawEvent->type) {
+            if (Utils::classNameToEvent($handler['event']) !== $rawEvent->type) {
                 continue;
             }
 
-            if (!Rule::_validateRules($event, $data['rules'] ?? [])) {
+            if (!Rule::_validateRules($event, $handler['rules'] ?? [])) {
                 continue;
             }
 
-            if (!empty($data['command'])) {
-                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $data['command']['path'])));
-                $commandData = Command::_validateCommand($data['command']['signatures'], $this->prefix, $commandText);
+            if (!empty($handler['command'])) {
+                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler['command']['path'])));
+                $commandData = Command::_validateCommand($handler['command']['signatures'], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;
                 }
 
-                if ($data['command']['class']) {
-                    $commandData = $data['command']['class']->validate($rawEvent, $commandData['command'], $commandData['arguments']);
+                if ($handler['command']['class']) {
+                    $commandData = $handler['command']['class']->validate($rawEvent, $commandData['command'], $commandData['arguments']);
                     if (!$commandData) {
                         continue;
                     }
@@ -159,7 +159,7 @@ class VkBot
             }
 
             $is_any_handler_found = true;
-            $callback = $this->runHandler($data, $callback_parameters);
+            $callback = $this->runHandler($handler, $callback_parameters);
 
             if (!is_null($callback)) {
                 $this->response((string) $callback);
