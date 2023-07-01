@@ -103,13 +103,33 @@ class VkBot
         }
 
         $event = new $classEvent($this->api);
+        $event = $this->fillEvent($event, $rawEvent);
+
+        $this->processHandlers($event, $rawEvent);
+    }
+
+    private function fillEvent(Event $event, object $rawEvent): Event
+    {
         $event->raw = $rawEvent;
 
         foreach ($event->raw->object ?? $event->raw as $key => $value) {
             $event->{$key} = $value;
         }
 
+        return $event;
+    }
+
+    private function processHandlers(Event $event, object $rawEvent): void
+    {
+        $is_any_handler_found = false;
+
         foreach ($this->handlers as $data) {
+            if ($is_any_handler_found === true) {
+                if (!isset($data['continue_processing']) or !$data['continue_processing']) {
+                    continue;
+                }
+            }
+
             if (Utils::classNameToEvent($data['event']) !== $rawEvent->type) {
                 continue;
             }
@@ -138,31 +158,36 @@ class VkBot
                 $callback_parameters = [$event];
             }
 
-            try {
-                if (is_array($data['action'])) {
-                    $classHandler = new $data['action'][0];
-                    $methodHandler = $data['action'][1];
-                    $callback = $classHandler->$methodHandler(...$callback_parameters);
-                } else {
-                    $callback = $data['action'](...$callback_parameters);
-                }
-            } catch (VkApiError $exception) {
-                throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
-            } catch (Exception $exception) {
-                throw new VkBotException('Invalid callback function: ' . $exception->getMessage(), $exception->getCode(), $exception);
-            }
+            $is_any_handler_found = true;
+            $callback = $this->runHandler($data, $callback_parameters);
 
             if (!is_null($callback)) {
                 $this->response((string) $callback);
                 return;
             }
 
-            if (!isset($data['continue_processing']) or !$data['continue_processing']) {
-                break;
-            }
         }
 
         $this->ok();
+    }
+
+    private function runHandler(array $handler, array $callback_parameters): mixed
+    {
+        try {
+            if (is_array($handler['action'])) {
+                $classHandler = new $handler['action'][0];
+                $methodHandler = $handler['action'][1];
+                $callback = $classHandler->$methodHandler(...$callback_parameters);
+            } else {
+                $callback = $handler['action'](...$callback_parameters);
+            }
+        } catch (VkApiError $exception) {
+            throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
+        } catch (Exception $exception) {
+            throw new VkBotException('Invalid callback function: ' . $exception->getMessage(), $exception->getCode(), $exception);
+        }
+
+        return $callback;
     }
 
     private function ok(): void
