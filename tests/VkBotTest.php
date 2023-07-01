@@ -161,6 +161,35 @@ class VkBotTest extends TestCase
     }
 
     /**
+     * Тест метода continueProcessing, который делает обработчик обязательным, даже если другой обработчик уже сработал
+     */
+    public function test_continueProcessing_method()
+    {
+        $this->expectOutputString(self::OK);
+
+        $test_is_call_1 = false;
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call_1) {$test_is_call_1 = true;}); // необязательный обработчик, который сработает
+
+        $test_is_call_2 = false;
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call_2) {$test_is_call_2 = true;})->continueProcessing(); // обязательный обработчик, который должен сработать в любом случае на это событие
+
+        $test_is_call_3 = false;
+        $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call_3) {$test_is_call_3 = true;}); // необязательный обработчик, который уже не сработает, т.к. сработал первый обработчик
+
+        $this->assertCount(3, $this->bot->getHandlers());
+        $this->assertArrayNotHasKey('continue_processing', $this->bot->getHandlers()[0]);
+        $this->assertArrayHasKey('continue_processing', $this->bot->getHandlers()[1]);
+        $this->assertArrayNotHasKey('continue_processing', $this->bot->getHandlers()[2]);
+        $this->assertTrue($this->bot->getHandlers()[1]['continue_processing']);
+
+        $this->bot->run($this->event_message_new);
+
+        $this->assertTrue($test_is_call_1);
+        $this->assertTrue($test_is_call_2);
+        $this->assertFalse($test_is_call_3);
+    }
+
+    /**
      * Тест на проверку возврата пустой строки если callback-функция вернула пустую строку
      */
     public function test_return_empty_string_callback_function()
