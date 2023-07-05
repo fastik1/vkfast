@@ -32,6 +32,23 @@ trait UtilsApiMethods
         return false;
     }
 
+    public function isChatMember(int $user_id, int $peer_id): bool
+    {
+        $chatMembers = $this->messages->getConversationMembers(peer_id: $peer_id);
+
+        if (!isset($chatMembers->response->items)) {
+            return false;
+        }
+
+        foreach ($chatMembers->response->items as $item) {
+            if ($item->member_id == $user_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isAdminChat(int $user_id, int $peer_id): bool
     {
         $members = $this->messages->getConversationMembers(peer_id: $peer_id);
