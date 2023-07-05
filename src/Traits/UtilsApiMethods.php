@@ -47,4 +47,21 @@ trait UtilsApiMethods
 
         return false;
     }
+
+    public function getGroupRole(int $user_id, int $group_id): bool|string
+    {
+        $groupMagagers = $this->groups->getMembers(group_id: $group_id, filter: 'managers');
+
+        if (!isset($groupMagagers->response->items)) {
+            return false;
+        }
+
+        foreach ($groupMagagers->response->items as $item) {
+            if ($item->id == $user_id) {
+                return $item->role;
+            }
+        }
+
+        return false;
+    }
 }
