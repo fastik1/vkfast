@@ -147,7 +147,7 @@ class VkBot
                 }
 
                 if ($handler['command']['class']) {
-                    $commandData = $handler['command']['class']->validate($rawEvent, $commandData['command'], $commandData['arguments']);
+                    $commandData = $handler['command']['class']->validate($event, $commandData['command'], $commandData['arguments']);
                     if (!$commandData) {
                         continue;
                     }

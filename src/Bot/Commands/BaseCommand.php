@@ -2,9 +2,11 @@
 
 namespace Fastik1\Vkfast\Bot\Commands;
 
+use Fastik1\Vkfast\Bot\Events\Event;
+
 abstract class BaseCommand
 {
-    abstract public function validate(object $event, string $command, array $arguments): bool|array;
+    abstract public function validate(Event $event, string $command, array $arguments): bool|array;
 
     public static function _validateCommand(array $commands, string $prefix, string $text): bool|array
     {
