@@ -4,8 +4,39 @@
 namespace Fastik1\Vkfast\Traits;
 
 
+use CURLFile;
+use Fastik1\Vkfast\Api\Keyboard\Keyboard;
+
 trait UtilsApiMethods
 {
+    public function sendMessage(int $id, string|int $message, ?Keyboard $keyboard = null, ?string $attachment = null, ...$arguments): mixed
+    {
+        $parameters = [
+            'peer_id' => $id,
+            'message' => $message,
+            'random_id' => 0,
+        ];
+
+        if ($keyboard)
+            $parameters['keyboard'] = $keyboard->json();
+
+        if ($attachment)
+            $parameters['attachment'] = $attachment;
+
+        return $this->messages->send($parameters + $arguments);
+    }
+
+    public function upload(string $url, string $file, string $type = 'photo')
+    {
+        $file = is_resource($file) ? stream_get_meta_data($file)['uri'] : $file;
+
+        return $this->request->sendCurl([
+            CURLOPT_URL => $url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => [$type => new CURLFile($file)],
+        ]);
+    }
+
     public function convertUserId(string|int $value): int|bool
     {
         $regex1 = preg_match('/http[s|]*:\/\/vk\.com\/id([0-9]+)/', $value, $itog1, PREG_OFFSET_CAPTURE);
