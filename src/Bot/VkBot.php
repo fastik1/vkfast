@@ -14,7 +14,6 @@ use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageBaseRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageBaseRule;
 use Fastik1\Vkfast\Utils;
-use PhpParser\Node\Expr\Array_;
 
 class VkBot
 {
