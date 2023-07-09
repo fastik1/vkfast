@@ -9,10 +9,10 @@ use Fastik1\Vkfast\Api\Keyboard\Keyboard;
 
 trait UtilsApiMethods
 {
-    public function sendMessage(int $id, string|int $message, ?Keyboard $keyboard = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
+    public function sendMessage(int|array $peer_ids, string|int $message, ?Keyboard $keyboard = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
     {
         $parameters = [
-            'peer_id' => $id,
+            'peer_ids' => $peer_ids,
             'message' => $message,
             'disable_mentions' => !$mentions,
             'random_id' => 0,
