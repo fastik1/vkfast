@@ -121,11 +121,15 @@ class VkBot
 
     private function processHandlers(Event $event, object $rawEvent): void
     {
-        $is_any_handler_found = false;
+        $is_not_continue_processing_handler_found = false;
 
         foreach ($this->handlers as $handler) {
-            if ($is_any_handler_found === true) {
-                if (!isset($handler['continue_processing']) or !$handler['continue_processing']) {
+            if ($is_not_continue_processing_handler_found === true) {
+                if (!isset($handler['continue_processing'])) {
+                    continue;
+                }
+
+                if (!$handler['continue_processing']) {
                     continue;
                 }
             }
@@ -158,7 +162,10 @@ class VkBot
                 $callback_parameters = [$event];
             }
 
-            $is_any_handler_found = true;
+            if (!isset($handler['continue_processing']) or !$handler['continue_processing']) {
+                $is_not_continue_processing_handler_found = true;
+            }
+
             $callback = $this->runHandler($handler, $callback_parameters);
 
             if (!is_null($callback)) {
