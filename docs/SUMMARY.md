@@ -24,6 +24,12 @@
 * [Команды](bot/command.md)
 * [Безопасность](bot/bezopasnost.md)
 
+## Сущности <a href="#entities" id="entities"></a>
+
+* [Информация](entities/info.md)
+* [User](entities/user.md)
+* [Forward](entities/forward.md)
+
 ## Прочее <a href="#other" id="other"></a>
 
 * [Первый бот](other/first-bot.md)

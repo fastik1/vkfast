@@ -23,9 +23,10 @@ layout:
 
 ```php
 sendMessage(
-    int $id, // id чата/пользователя (peer_id)
+    int|string|array $peer_ids, // id чата/пользователя (можно указать массив)
     string|int $message, // текст сообщения
-    ?Keyboard $keyboard = null, // объект клавиатуры (см. выше)
+    ?Keyboard $keyboard = null, // объект клавиатуры
+    ?Forward $forward = null, // объект пересланного сообщения
     bool $mentions = false, // вкл/выкл упоминания. По умолчанию упоминания выключены
     ?string $attachment = null, // вложения формата {type}{owner_id}_{media_id}
     ...$arguments // другие параметры вызова метода messages.send
