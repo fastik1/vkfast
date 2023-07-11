@@ -3,6 +3,7 @@
 namespace Fastik1\Vkfast\Api;
 
 use Fastik1\Vkfast\Exceptions\VkApiException;
+use Fastik1\Vkfast\Traits\CreateEntities;
 use Fastik1\Vkfast\Traits\UtilsApiMethods;
 
 /**
@@ -53,7 +54,7 @@ use Fastik1\Vkfast\Traits\UtilsApiMethods;
  */
 class VkApi
 {
-    use UtilsApiMethods;
+    use UtilsApiMethods, CreateEntities;
 
     private VkApiRequest $request;
     private array $instances = [];
