@@ -16,6 +16,11 @@ class User extends BaseEntity
         $this->id = $id;
     }
 
+    public function id(): int
+    {
+        return $this->id;
+    }
+
     public function mention(?string $text = null): string
     {
         return "@id{$this->id}" . (!is_null($text) ? "($text)" : null);
