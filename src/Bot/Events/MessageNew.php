@@ -4,6 +4,7 @@
 namespace Fastik1\Vkfast\Bot\Events;
 
 
+use Fastik1\Vkfast\Api\Entities\Forward;
 use Fastik1\Vkfast\Api\Keyboard\Keyboard;
 
 /**
@@ -12,8 +13,8 @@ use Fastik1\Vkfast\Api\Keyboard\Keyboard;
  */
 class MessageNew extends Event
 {
-    public function answer(string|int $message, ?Keyboard $keyboard = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
+    public function answer(string|int $message, ?Keyboard $keyboard = null, ?Forward $forward = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
     {
-        return $this->api->sendMessage($this->message->peer_id, $message, $keyboard, $mentions, $attachment, $arguments);
+        return $this->api->sendMessage($this->message->peer_id, $message, $keyboard, $forward, $mentions, $attachment, ...$arguments);
     }
 }
