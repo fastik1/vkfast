@@ -7,18 +7,18 @@ use Fastik1\Vkfast\Api\VkApi;
 class User extends BaseEntity
 {
     private VkApi $api;
-    private int $user_id;
+    private int $id;
     private ?array $last_data_users_get = null;
 
-    public function __construct(VkApi $api, $user_id)
+    public function __construct(VkApi $api, $id)
     {
         $this->api = $api;
-        $this->user_id = $user_id;
+        $this->id = $id;
     }
 
     public function mention(?string $text = null): string
     {
-        return "@id{$this->user_id}" . (!is_null($text) ? "($text)" : null);
+        return "@id{$this->id}" . (!is_null($text) ? "($text)" : null);
     }
 
     public function mentionWithFullName(string $name_case = 'nom'): string
@@ -85,7 +85,7 @@ class User extends BaseEntity
     private function requestUsersGet(string $name_case = 'nom'): object
     {
         $this->last_data_users_get['name_case'] = $name_case;
-        $this->last_data_users_get['request'] = $this->api->users->get(user_ids: $this->user_id, name_case: $name_case);
+        $this->last_data_users_get['request'] = $this->api->users->get(user_ids: $this->id, name_case: $name_case);
 
         return $this->last_data_users_get['request'];
     }
