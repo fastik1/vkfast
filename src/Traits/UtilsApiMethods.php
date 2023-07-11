@@ -5,11 +5,12 @@ namespace Fastik1\Vkfast\Traits;
 
 
 use CURLFile;
+use Fastik1\Vkfast\Api\Entities\Forward;
 use Fastik1\Vkfast\Api\Keyboard\Keyboard;
 
 trait UtilsApiMethods
 {
-    public function sendMessage(int|string|array $peer_ids, string|int $message, ?Keyboard $keyboard = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
+    public function sendMessage(int|string|array $peer_ids, string|int $message, ?Keyboard $keyboard = null, ?Forward $forward = null, bool $mentions = false, ?string $attachment = null, ...$arguments): mixed
     {
         $parameters = [
             'peer_ids' => is_array($peer_ids) ? join(',', $peer_ids) : $peer_ids,
@@ -17,6 +18,9 @@ trait UtilsApiMethods
             'disable_mentions' => !$mentions,
             'random_id' => 0,
         ];
+
+        if ($forward)
+            $parameters['forward'] = $forward->json();
 
         if ($keyboard)
             $parameters['keyboard'] = $keyboard->json();
