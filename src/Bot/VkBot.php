@@ -28,11 +28,11 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $eventClass, Closure|Array $action): self
+    public function on(string $eventClass, Closure|Array $action): HandlerConfiguration
     {
-        array_push($this->handlers, ['event' => $eventClass, 'action' => $action]);
-        $this->handlers = new HandlerConfiguration()
-        return $this;
+        $handlerConfiguration = new HandlerConfiguration($eventClass, $action);
+        $this->handlers[] = $handlerConfiguration;
+        return $handlerConfiguration;
     }
 
     public function message(Closure|Array $action): self
@@ -50,36 +50,6 @@ class VkBot
     public function chatMessage(Closure|Array $action): self
     {
         $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
-        return $this;
-    }
-
-    public function rule(BaseRule|array $rules): self
-    {
-        if (is_array($rules)) {
-            foreach ($rules as $rule) {
-                $this->handlers[array_key_last($this->handlers)]['rules'][] = $rule;
-            }
-        } else {
-            $this->handlers[array_key_last($this->handlers)]['rules'][] = $rules;
-        }
-
-        return $this;
-    }
-
-    public function command(string|array $commands, string $path = 'object.message.text', BaseCommand|null $classCommand = null): self
-    {
-        if (is_array($commands)) {
-            $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => $commands, 'path' => $path, 'class' => $classCommand];
-        } else {
-            $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => [$commands], 'path' => $path, 'class' => $classCommand];
-        }
-
-        return $this;
-    }
-
-    public function continueProcessing(): self
-    {
-        $this->handlers[array_key_last($this->handlers)]['continue_processing'] = true;
         return $this;
     }
 
@@ -126,33 +96,29 @@ class VkBot
 
         foreach ($this->handlers as $handler) {
             if ($is_not_continue_processing_handler_found === true) {
-                if (!isset($handler['continue_processing'])) {
-                    continue;
-                }
-
-                if (!$handler['continue_processing']) {
+                if (!$handler->continueProcessing) {
                     continue;
                 }
             }
 
-            if (Utils::classNameToEvent($handler['event']) !== $rawEvent->type) {
+            if (Utils::classNameToEvent($handler->eventType) !== $rawEvent->type) {
                 continue;
             }
 
-            if (!BaseRule::_validateRules($event, $handler['rules'] ?? [])) {
+            if (!BaseRule::_validateRules($event, $handler->rules ?? [])) {
                 continue;
             }
 
-            if (!empty($handler['command'])) {
-                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler['command']['path'])));
-                $commandData = BaseCommand::_validateCommand($handler['command']['signatures'], $this->prefix, $commandText);
+            if ($handler->command) {
+                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler->command->path)));
+                $commandData = BaseCommand::_validateCommand([$handler->command->name], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;
                 }
 
-                if ($handler['command']['class']) {
-                    $commandData = $handler['command']['class']->validate($event, $commandData['command'], $commandData['arguments']);
+                if ($handler->command->class) {
+                    $commandData = $handler->command->class->validate($event, $commandData['command'], $commandData['arguments']);
                     if (!$commandData) {
                         continue;
                     }
@@ -163,7 +129,7 @@ class VkBot
                 $callback_parameters = [$event];
             }
 
-            if (!isset($handler['continue_processing']) or !$handler['continue_processing']) {
+            if (!$handler->continueProcessing) {
                 $is_not_continue_processing_handler_found = true;
             }
 
@@ -179,15 +145,15 @@ class VkBot
         $this->ok();
     }
 
-    private function runHandler(array $handler, array $callback_parameters): mixed
+    private function runHandler(HandlerConfiguration $handler, array $callback_parameters): mixed
     {
         try {
-            if (is_array($handler['action'])) {
-                $classHandler = new $handler['action'][0];
-                $methodHandler = $handler['action'][1];
-                $callback = $classHandler->$methodHandler(...$callback_parameters);
+            if ($handler->action->callback) {
+                $callback = ($handler->action->callback)(...$callback_parameters);
             } else {
-                $callback = $handler['action'](...$callback_parameters);
+                $classHandler = new $handler->action->class;
+                $methodHandler = $handler->action->method;
+                $callback = $classHandler->$methodHandler(...$callback_parameters);
             }
         } catch (VkApiError $exception) {
             throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
