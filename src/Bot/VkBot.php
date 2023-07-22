@@ -6,6 +6,7 @@ use Closure;
 use Exception;
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Commands\BaseCommand;
+use Fastik1\Vkfast\Bot\Configuration\HandlerConfiguration;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Bot\Rules\BaseRule;
@@ -30,6 +31,7 @@ class VkBot
     public function on(string $eventClass, Closure|Array $action): self
     {
         array_push($this->handlers, ['event' => $eventClass, 'action' => $action]);
+        $this->handlers = new HandlerConfiguration()
         return $this;
     }
 
