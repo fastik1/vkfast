@@ -28,9 +28,9 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $eventClass, Closure|Array $action): HandlerConfiguration
+    public function on(string $eventType, Closure|Array $action): HandlerConfiguration
     {
-        $handlerConfiguration = new HandlerConfiguration($eventClass, $action);
+        $handlerConfiguration = new HandlerConfiguration($eventType, $action);
         $this->handlers[] = $handlerConfiguration;
         return $handlerConfiguration;
     }
@@ -73,8 +73,7 @@ class VkBot
             $classEvent = Event::class;
         }
 
-        $event = new $classEvent($this->api);
-        $event = $this->fillEvent($event, $rawEvent);
+        $event = $this->fillEvent(new $classEvent($this->api), $rawEvent);
 
         $this->processHandlers($event, $rawEvent);
     }
@@ -92,10 +91,10 @@ class VkBot
 
     private function processHandlers(Event $event, object $rawEvent): void
     {
-        $is_not_continue_processing_handler_found = false;
+        $isNotContinueProcessingHandlerFound = false;
 
         foreach ($this->handlers as $handler) {
-            if ($is_not_continue_processing_handler_found === true) {
+            if ($isNotContinueProcessingHandlerFound === true) {
                 if (!$handler->continueProcessing) {
                     continue;
                 }
@@ -124,16 +123,16 @@ class VkBot
                     }
                 }
 
-                $callback_parameters = [$event, $commandData['command'], ...$commandData['arguments']];
+                $callbackParameters = [$event, $commandData['command'], ...$commandData['arguments']];
             } else {
-                $callback_parameters = [$event];
+                $callbackParameters = [$event];
             }
 
             if (!$handler->continueProcessing) {
-                $is_not_continue_processing_handler_found = true;
+                $isNotContinueProcessingHandlerFound = true;
             }
 
-            $callback = $this->runHandler($handler, $callback_parameters);
+            $callback = $this->runHandler($handler, $callbackParameters);
 
             if (!is_null($callback)) {
                 $this->response((string) $callback);
@@ -145,15 +144,15 @@ class VkBot
         $this->ok();
     }
 
-    private function runHandler(HandlerConfiguration $handler, array $callback_parameters): mixed
+    private function runHandler(HandlerConfiguration $handler, array $callbackParameters): mixed
     {
         try {
             if ($handler->action->callback) {
-                $callback = ($handler->action->callback)(...$callback_parameters);
+                $callback = ($handler->action->callback)(...$callbackParameters);
             } else {
                 $classHandler = new $handler->action->class;
                 $methodHandler = $handler->action->method;
-                $callback = $classHandler->$methodHandler(...$callback_parameters);
+                $callback = $classHandler->$methodHandler(...$callbackParameters);
             }
         } catch (VkApiError $exception) {
             throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);
