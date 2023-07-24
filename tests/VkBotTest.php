@@ -95,11 +95,9 @@ class VkBotTest extends TestCase
      */
     public function test_on_method()
     {
-        $this->assertCount(0, $this->bot->getHandlers());
-
         $this->bot->on(MessageNew::class, function (MessageNew $event) {});
 
-        $this->assertCount(1, $this->bot->getHandlers());
+        $this->assertCount(1, $this->bot->handlers_message_new);
     }
 
     /**
@@ -110,7 +108,7 @@ class VkBotTest extends TestCase
     {
         $this->bot->message(function (MessageNew $event) {});
 
-        $this->assertEmpty($this->bot->getHandlers()[0]->rules);
+        $this->assertEmpty($this->bot->handlers_message_new[0]->rules);
     }
 
     /**
@@ -121,10 +119,10 @@ class VkBotTest extends TestCase
     {
         $this->bot->privateMessage(function (MessageNew $event) {});
 
-        $this->assertNotEmpty($this->bot->getHandlers()[0]->rules);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
 
         $is_finded_rule = false;
-        foreach ($this->bot->getHandlers()[0]->rules as $rule) {
+        foreach ($this->bot->handlers_message_new[0]->rules as $rule) {
             if (IsPrivateMessageBaseRule::class == $rule::class) {
                 $is_finded_rule = true;
             }
@@ -140,10 +138,10 @@ class VkBotTest extends TestCase
     {
         $this->bot->chatMessage(function (MessageNew $event) {});
 
-        $this->assertNotEmpty($this->bot->getHandlers()[0]->rules);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
 
         $is_found_rule = false;
-        foreach ($this->bot->getHandlers()[0]->rules as $rule) {
+        foreach ($this->bot->handlers_message_new[0]->rules as $rule) {
             if (IsChatMessageBaseRule::class == $rule::class) {
                 $is_found_rule = true;
             }
@@ -167,9 +165,9 @@ class VkBotTest extends TestCase
         $test_is_call_3 = false;
         $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call_3) {$test_is_call_3 = true;}); // необязательный обработчик, который уже не сработает, т.к. сработал первый обработчик
 
-        $this->assertFalse($this->bot->getHandlers()[0]->continueProcessing);
-        $this->assertTrue($this->bot->getHandlers()[1]->continueProcessing);
-        $this->assertFalse($this->bot->getHandlers()[2]->continueProcessing);
+        $this->assertFalse($this->bot->handlers_message_new[0]->continueProcessing);
+        $this->assertTrue($this->bot->handlers_message_new[1]->continueProcessing);
+        $this->assertFalse($this->bot->handlers_message_new[2]->continueProcessing);
 
         $this->bot->run($this->event_message_new);
 
@@ -432,8 +430,8 @@ class VkBotTest extends TestCase
         $this->bot->on(MessageNew::class, function () {})
             ->rule(new IsPrivateMessageBaseRule);
 
-        $this->assertNotEmpty($this->bot->getHandlers()[0]->rules);
-        $this->assertInstanceOf(IsPrivateMessageBaseRule::class, $this->bot->getHandlers()[0]->rules[0]);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
+        $this->assertInstanceOf(IsPrivateMessageBaseRule::class, $this->bot->handlers_message_new[0]->rules[0]);
     }
 
     /**
