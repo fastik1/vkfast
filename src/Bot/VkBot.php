@@ -14,10 +14,13 @@ use Fastik1\Vkfast\Exceptions\VkApiError;
 use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageBaseRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageBaseRule;
+use Fastik1\Vkfast\Traits\AttrubuteHandlers;
 use Fastik1\Vkfast\Utils;
 
 class VkBot
 {
+    use AttrubuteHandlers;
+
     public VkApi $api;
     private array $handlers = [];
     private string $secret = '';
@@ -31,7 +34,8 @@ class VkBot
     public function on(string $eventType, Closure|Array $action): HandlerConfiguration
     {
         $handlerConfiguration = new HandlerConfiguration($eventType, $action);
-        $this->handlers[] = $handlerConfiguration;
+        $attrubuteHandlersName = Utils::eventTypeToAttributeName(Utils::classNameToEvent($eventType));
+        $this->$attrubuteHandlersName[] = $handlerConfiguration;
         return $handlerConfiguration;
     }
 
@@ -92,8 +96,9 @@ class VkBot
     private function processHandlers(Event $event, object $rawEvent): void
     {
         $isNotContinueProcessingHandlerFound = false;
+        $attrubuteHandlersName = Utils::eventTypeToAttributeName($event->type);
 
-        foreach ($this->handlers as $handler) {
+        foreach ($this->$attrubuteHandlersName as $handler) {
             if ($isNotContinueProcessingHandlerFound === true) {
                 if (!$handler->continueProcessing) {
                     continue;

@@ -39,4 +39,9 @@ class Utils
         $string = strtolower($string);
         return $string;
     }
+
+    public static function eventTypeToAttributeName(string $eventType): string
+    {
+        return 'handlers_' . $eventType;
+    }
 }
