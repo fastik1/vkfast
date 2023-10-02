@@ -6,6 +6,7 @@ use Closure;
 use Exception;
 use Fastik1\Vkfast\Api\VkApi;
 use Fastik1\Vkfast\Bot\Commands\BaseCommand;
+use Fastik1\Vkfast\Bot\Configuration\HandlerConfiguration;
 use Fastik1\Vkfast\Bot\Events\Event;
 use Fastik1\Vkfast\Bot\Events\MessageNew;
 use Fastik1\Vkfast\Bot\Rules\BaseRule;
@@ -13,10 +14,13 @@ use Fastik1\Vkfast\Exceptions\VkApiError;
 use Fastik1\Vkfast\Exceptions\VkBotException;
 use Fastik1\Vkfast\Bot\Rules\IsChatMessageBaseRule;
 use Fastik1\Vkfast\Bot\Rules\IsPrivateMessageBaseRule;
+use Fastik1\Vkfast\Traits\AttrubuteHandlers;
 use Fastik1\Vkfast\Utils;
 
 class VkBot
 {
+    use AttrubuteHandlers;
+
     public VkApi $api;
     private array $handlers = [];
     private string $secret = '';
@@ -27,58 +31,27 @@ class VkBot
         $this->api = $api;
     }
 
-    public function on(string $eventClass, Closure|Array $action): self
+    public function on(string $eventType, Closure|Array $action): HandlerConfiguration
     {
-        array_push($this->handlers, ['event' => $eventClass, 'action' => $action]);
-        return $this;
+        $handlerConfiguration = new HandlerConfiguration($eventType, $action);
+        $attrubuteHandlersName = Utils::eventTypeToAttributeName(Utils::classNameToEvent($eventType));
+        $this->$attrubuteHandlersName[] = $handlerConfiguration;
+        return $handlerConfiguration;
     }
 
-    public function message(Closure|Array $action): self
+    public function message(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action);
-        return $this;
+        return $this->on(MessageNew::class, $action);
     }
 
-    public function privateMessage(Closure|Array $action): self
+    public function privateMessage(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageBaseRule());
-        return $this;
+        return $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageBaseRule());
     }
 
-    public function chatMessage(Closure|Array $action): self
+    public function chatMessage(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
-        return $this;
-    }
-
-    public function rule(BaseRule|array $rules): self
-    {
-        if (is_array($rules)) {
-            foreach ($rules as $rule) {
-                $this->handlers[array_key_last($this->handlers)]['rules'][] = $rule;
-            }
-        } else {
-            $this->handlers[array_key_last($this->handlers)]['rules'][] = $rules;
-        }
-
-        return $this;
-    }
-
-    public function command(string|array $commands, string $path = 'object.message.text', BaseCommand|null $classCommand = null): self
-    {
-        if (is_array($commands)) {
-            $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => $commands, 'path' => $path, 'class' => $classCommand];
-        } else {
-            $this->handlers[array_key_last($this->handlers)]['command'] = ['signatures' => [$commands], 'path' => $path, 'class' => $classCommand];
-        }
-
-        return $this;
-    }
-
-    public function continueProcessing(): self
-    {
-        $this->handlers[array_key_last($this->handlers)]['continue_processing'] = true;
-        return $this;
+        return $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
     }
 
     public function run(array|object|null $rawEvent = null): void
@@ -101,8 +74,7 @@ class VkBot
             $classEvent = Event::class;
         }
 
-        $event = new $classEvent($this->api);
-        $event = $this->fillEvent($event, $rawEvent);
+        $event = $this->fillEvent(new $classEvent($this->api), $rawEvent);
 
         $this->processHandlers($event, $rawEvent);
     }
@@ -120,52 +92,49 @@ class VkBot
 
     private function processHandlers(Event $event, object $rawEvent): void
     {
-        $is_not_continue_processing_handler_found = false;
+        $isNotContinueProcessingHandlerFound = false;
+        $attrubuteHandlersName = Utils::eventTypeToAttributeName($event->type);
 
-        foreach ($this->handlers as $handler) {
-            if ($is_not_continue_processing_handler_found === true) {
-                if (!isset($handler['continue_processing'])) {
-                    continue;
-                }
-
-                if (!$handler['continue_processing']) {
+        foreach ($this->$attrubuteHandlersName as $handler) {
+            if ($isNotContinueProcessingHandlerFound === true) {
+                if (!$handler->continueProcessing) {
                     continue;
                 }
             }
 
-            if (Utils::classNameToEvent($handler['event']) !== $rawEvent->type) {
+            if (Utils::classNameToEvent($handler->eventType) !== $rawEvent->type) {
                 continue;
             }
 
-            if (!BaseRule::_validateRules($event, $handler['rules'] ?? [])) {
+            if (!BaseRule::_validateRules($event, $handler->rules ?? [])) {
                 continue;
             }
 
-            if (!empty($handler['command'])) {
-                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler['command']['path'])));
-                $commandData = BaseCommand::_validateCommand($handler['command']['signatures'], $this->prefix, $commandText);
+            if ($handler->command) {
+                $commandText = preg_replace('/\s+/', ' ', trim(Utils::getArrayElementByString($rawEvent, $handler->command->path)));
+                $commandData = BaseCommand::_validateCommand([$handler->command->name], $this->prefix, $commandText);
 
                 if (!$commandData) {
                     continue;
                 }
 
-                if ($handler['command']['class']) {
-                    $commandData = $handler['command']['class']->validate($event, $commandData['command'], $commandData['arguments']);
+                if ($handler->command->class) {
+                    $commandData = $handler->command->class->validate($event, $commandData['command'], $commandData['arguments']);
                     if (!$commandData) {
                         continue;
                     }
                 }
 
-                $callback_parameters = [$event, $commandData['command'], ...$commandData['arguments']];
+                $callbackParameters = [$event, $commandData['command'], ...$commandData['arguments']];
             } else {
-                $callback_parameters = [$event];
+                $callbackParameters = [$event];
             }
 
-            if (!isset($handler['continue_processing']) or !$handler['continue_processing']) {
-                $is_not_continue_processing_handler_found = true;
+            if (!$handler->continueProcessing) {
+                $isNotContinueProcessingHandlerFound = true;
             }
 
-            $callback = $this->runHandler($handler, $callback_parameters);
+            $callback = $this->runHandler($handler, $callbackParameters);
 
             if (!is_null($callback)) {
                 $this->response((string) $callback);
@@ -177,15 +146,15 @@ class VkBot
         $this->ok();
     }
 
-    private function runHandler(array $handler, array $callback_parameters): mixed
+    private function runHandler(HandlerConfiguration $handler, array $callbackParameters): mixed
     {
         try {
-            if (is_array($handler['action'])) {
-                $classHandler = new $handler['action'][0];
-                $methodHandler = $handler['action'][1];
-                $callback = $classHandler->$methodHandler(...$callback_parameters);
+            if ($handler->action->callback) {
+                $callback = ($handler->action->callback)(...$callbackParameters);
             } else {
-                $callback = $handler['action'](...$callback_parameters);
+                $classHandler = new $handler->action->class;
+                $methodHandler = $handler->action->method;
+                $callback = $classHandler->$methodHandler(...$callbackParameters);
             }
         } catch (VkApiError $exception) {
             throw new VkApiError($exception->getMessage(), $exception->getCode(), $exception);

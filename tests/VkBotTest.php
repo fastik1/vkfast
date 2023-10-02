@@ -95,42 +95,34 @@ class VkBotTest extends TestCase
      */
     public function test_on_method()
     {
-        $this->assertCount(0, $this->bot->getHandlers());
-
         $this->bot->on(MessageNew::class, function (MessageNew $event) {});
 
-        $this->assertCount(1, $this->bot->getHandlers());
+        $this->assertCount(1, $this->bot->handlers_message_new);
     }
 
     /**
      * Тест на добавление нового события "message_new" с помощью хелпера message() для обработки всех событий данного типа
-     * Порядок проверки: отсутствие событий, добавилось ли событие, отсутствие доп. правил (rules) для добавленного события
+     * Порядок проверки: отсутствие доп. правил (rules) для добавленного события
      */
     public function test_message_method()
     {
-        $this->assertCount(0, $this->bot->getHandlers());
-
         $this->bot->message(function (MessageNew $event) {});
 
-        $this->assertCount(1, $this->bot->getHandlers());
-        $this->assertArrayNotHasKey('rules', $this->bot->getHandlers()[0]);
+        $this->assertEmpty($this->bot->handlers_message_new[0]->rules);
     }
 
     /**
      * Тест на добавление нового события "message_new" с помощью хелпера privateMessage() только для обработки личных сообщений
-     * Порядок проверки: отсутствие событий, добавилось ли событие, наличие правил (rules), наличие правила IsPrivateMessageRule
+     * Порядок проверки: наличие правил (rules), наличие правила IsPrivateMessageRule
      */
     public function test_privateMessage_method()
     {
-        $this->assertCount(0, $this->bot->getHandlers());
-
         $this->bot->privateMessage(function (MessageNew $event) {});
 
-        $this->assertCount(1, $this->bot->getHandlers());
-        $this->assertArrayHasKey('rules', $this->bot->getHandlers()[0]);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
 
         $is_finded_rule = false;
-        foreach ($this->bot->getHandlers()[0]['rules'] as $rule) {
+        foreach ($this->bot->handlers_message_new[0]->rules as $rule) {
             if (IsPrivateMessageBaseRule::class == $rule::class) {
                 $is_finded_rule = true;
             }
@@ -140,19 +132,16 @@ class VkBotTest extends TestCase
 
     /**
      * Тест на добавление нового события "message_new" с помощью хелпера privateMessage() только для обработки сообщений из чата
-     * Порядок проверки: отсутствие событий, добавилось ли событие, наличие правил (rules), наличие правила IsChatMessageRule
+     * Порядок проверки: наличие правил (rules), наличие правила IsChatMessageRule
      */
     public function test_chatMessage_method()
     {
-        $this->assertCount(0, $this->bot->getHandlers());
-
         $this->bot->chatMessage(function (MessageNew $event) {});
 
-        $this->assertCount(1, $this->bot->getHandlers());
-        $this->assertArrayHasKey('rules', $this->bot->getHandlers()[0]);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
 
         $is_found_rule = false;
-        foreach ($this->bot->getHandlers()[0]['rules'] as $rule) {
+        foreach ($this->bot->handlers_message_new[0]->rules as $rule) {
             if (IsChatMessageBaseRule::class == $rule::class) {
                 $is_found_rule = true;
             }
@@ -176,11 +165,9 @@ class VkBotTest extends TestCase
         $test_is_call_3 = false;
         $this->bot->on(MessageNew::class, function (MessageNew $event) use (&$test_is_call_3) {$test_is_call_3 = true;}); // необязательный обработчик, который уже не сработает, т.к. сработал первый обработчик
 
-        $this->assertCount(3, $this->bot->getHandlers());
-        $this->assertArrayNotHasKey('continue_processing', $this->bot->getHandlers()[0]);
-        $this->assertArrayHasKey('continue_processing', $this->bot->getHandlers()[1]);
-        $this->assertArrayNotHasKey('continue_processing', $this->bot->getHandlers()[2]);
-        $this->assertTrue($this->bot->getHandlers()[1]['continue_processing']);
+        $this->assertFalse($this->bot->handlers_message_new[0]->continueProcessing);
+        $this->assertTrue($this->bot->handlers_message_new[1]->continueProcessing);
+        $this->assertFalse($this->bot->handlers_message_new[2]->continueProcessing);
 
         $this->bot->run($this->event_message_new);
 
@@ -434,7 +421,7 @@ class VkBotTest extends TestCase
 
     /**
      * Тест на добавление правила
-     * Порядок проверки: добавление нового обработчика, наличие внутри массива с правилами, проверка на НЕ пустоту первого правила, проверка на является ли первое правило инстансом добавленного правила
+     * Порядок проверки: проверка на НЕ пустоту массива с правилами, проверка на является ли первое правило инстансом добавленного правила
      */
     public function test_add_rule()
     {
@@ -443,10 +430,8 @@ class VkBotTest extends TestCase
         $this->bot->on(MessageNew::class, function () {})
             ->rule(new IsPrivateMessageBaseRule);
 
-        $this->assertArrayHasKey(0, $this->bot->getHandlers());
-        $this->assertArrayHasKey('rules', $this->bot->getHandlers()[0]);
-        $this->assertNotEmpty($this->bot->getHandlers()[0]['rules'][0]);
-        $this->assertInstanceOf(IsPrivateMessageBaseRule::class, $this->bot->getHandlers()[0]['rules'][0]);
+        $this->assertNotEmpty($this->bot->handlers_message_new[0]->rules);
+        $this->assertInstanceOf(IsPrivateMessageBaseRule::class, $this->bot->handlers_message_new[0]->rules[0]);
     }
 
     /**

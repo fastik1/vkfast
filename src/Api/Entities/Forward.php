@@ -6,11 +6,11 @@ use Fastik1\Vkfast\Api\VkApi;
 
 class Forward extends BaseEntity
 {
-    private int $peer_id;
-    private bool $is_reply;
-    private ?int $owner_id;
-    private array $conversation_message_ids = [];
-    private array $message_ids = [];
+    public int $peer_id;
+    public bool $is_reply;
+    public ?int $owner_id;
+    public array $conversation_message_ids = [];
+    public array $message_ids = [];
 
     public function __construct(int $peer_id, bool $is_reply = false, ?int $owner_id = null)
     {
