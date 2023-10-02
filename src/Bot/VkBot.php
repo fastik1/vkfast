@@ -39,22 +39,19 @@ class VkBot
         return $handlerConfiguration;
     }
 
-    public function message(Closure|Array $action): self
+    public function message(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action);
-        return $this;
+        return $this->on(MessageNew::class, $action);
     }
 
-    public function privateMessage(Closure|Array $action): self
+    public function privateMessage(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageBaseRule());
-        return $this;
+        return $this->on(MessageNew::class, $action)->rule(new IsPrivateMessageBaseRule());
     }
 
-    public function chatMessage(Closure|Array $action): self
+    public function chatMessage(Closure|Array $action): HandlerConfiguration
     {
-        $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
-        return $this;
+        return $this->on(MessageNew::class, $action)->rule(new IsChatMessageBaseRule());
     }
 
     public function run(array|object|null $rawEvent = null): void
