@@ -44,8 +44,8 @@ trait UtilsApiMethods
 
     public function convertUserId(string|int $value): int|bool
     {
-        $regex1 = preg_match('/http[s|]*:\/\/vk\.com\/id([0-9]+)/', $value, $itog1, PREG_OFFSET_CAPTURE);
-        $regex2 = preg_match('/http[s|]*:\/\/vk\.com\/(.*)/', $value, $itog2, PREG_OFFSET_CAPTURE);
+        $regex1 = preg_match('/http[s|]*:\/\/vk\.[com|ru]*\/id([0-9]+)/', $value, $itog1, PREG_OFFSET_CAPTURE);
+        $regex2 = preg_match('/http[s|]*:\/\/vk\.[com|ru]*\/(.*)/', $value, $itog2, PREG_OFFSET_CAPTURE);
         $regex3 = preg_match('/\[id([0-9]+)\|(.*)\]/', $value, $itog3, PREG_OFFSET_CAPTURE);
 
         $id = $this->users->get(user_ids: $value)->response[0]->id ?? null;
